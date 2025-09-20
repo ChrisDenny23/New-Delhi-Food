@@ -89,12 +89,13 @@ class AboutPage extends StatelessWidget {
                 child: Opacity(
                   opacity: value,
                   child: Text(
-                    'New Delhi Foods delivers fresh, quality food products rooted in Indian tradition, focusing on freshness and customer satisfaction. We offer a diverse range including fresh produce, dairy, bakery, canned goods, frozen foods, and beverages, catering to everyday needs with authenticity.\n Our mission is to be India\'s most trusted source for fresh and authentic foods, providing unmatched quality and service. Committed to quality, freshness, and customer satisfaction, we aim to exceed expectations with every product we offer.',
-
+                    isDesktop
+                        ? 'New Delhi Foods delivers fresh, quality food products rooted in Indian tradition, focusing on freshness and customer satisfaction. We offer a diverse range including fresh produce, dairy, bakery, canned goods, frozen foods, and beverages, catering to everyday needs with authenticity.\n Our mission is to be India\'s most trusted source for fresh and authentic foods, providing unmatched quality and service. Committed to quality, freshness, and customer satisfaction, we aim to exceed expectations with every product we offer.'
+                        : 'New Delhi Foods delivers fresh, quality food products rooted in Indian tradition. We offer a diverse range including fresh produce, dairy, bakery, canned goods, frozen foods, and beverages.\n\nOur mission is to be India\'s most trusted source for fresh and authentic foods with unmatched quality and service.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Josefin Sans',
-                      fontSize: 18,
+                      fontSize: isDesktop ? 18 : 16,
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       height: 1.6,
@@ -116,7 +117,7 @@ class AboutPage extends StatelessWidget {
                 child: Opacity(
                   opacity: value,
                   child: Container(
-                    height: 300,
+                    height: isDesktop ? 300 : 200,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -141,10 +142,10 @@ class AboutPage extends StatelessWidget {
                               ),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Icon(
                                 Icons.storefront,
-                                size: 100,
+                                size: isDesktop ? 100 : 60,
                                 color: Colors.white,
                               ),
                             ),
@@ -178,7 +179,7 @@ class AboutPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Josefin Sans',
-                    fontSize: isDesktop ? 42 : 32,
+                    fontSize: isDesktop ? 42 : 28,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF2D1B16),
                   ),
@@ -187,7 +188,7 @@ class AboutPage extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 50),
+        SizedBox(height: isDesktop ? 50 : 30),
 
         if (isDesktop)
           Row(
@@ -198,6 +199,7 @@ class AboutPage extends StatelessWidget {
                   'Vision',
                   'To be India\'s most trusted source for fresh and authentic foods.',
                   0,
+                  isDesktop,
                 ),
               ),
               const SizedBox(width: 30),
@@ -207,6 +209,7 @@ class AboutPage extends StatelessWidget {
                   'Mission',
                   'Providing fresh, authentic food products with unmatched quality and service.',
                   200,
+                  isDesktop,
                 ),
               ),
               const SizedBox(width: 30),
@@ -216,6 +219,7 @@ class AboutPage extends StatelessWidget {
                   'Values',
                   'Committed to quality, freshness, and customer satisfaction.',
                   400,
+                  isDesktop,
                 ),
               ),
             ],
@@ -226,22 +230,25 @@ class AboutPage extends StatelessWidget {
               _buildInfoCard(
                 Icons.visibility,
                 'Vision',
-                'To be India\'s most trusted source for fresh and authentic foods.',
+                'India\'s most trusted source for fresh foods.',
                 0,
+                isDesktop,
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
                 Icons.flag,
                 'Mission',
-                'Providing fresh, authentic food products with unmatched quality and service.',
+                'Providing fresh, authentic food products with quality service.',
                 200,
+                isDesktop,
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
                 Icons.star,
                 'Values',
-                'Committed to quality, freshness, and customer satisfaction.',
+                'Quality, freshness, and customer satisfaction.',
                 400,
+                isDesktop,
               ),
             ],
           ),
@@ -254,6 +261,7 @@ class AboutPage extends StatelessWidget {
     String title,
     String description,
     int delay,
+    bool isDesktop,
   ) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 1000 + delay),
@@ -264,7 +272,7 @@ class AboutPage extends StatelessWidget {
           child: Opacity(
             opacity: value,
             child: Container(
-              padding: const EdgeInsets.all(30),
+              padding: EdgeInsets.all(isDesktop ? 30 : 20),
               decoration: BoxDecoration(
                 color: const Color(0xFF4A3328),
                 borderRadius: BorderRadius.circular(20),
@@ -279,30 +287,34 @@ class AboutPage extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isDesktop ? 16 : 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFD700).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Icon(icon, color: const Color(0xFFFFD700), size: 32),
+                    child: Icon(
+                      icon,
+                      color: const Color(0xFFFFD700),
+                      size: isDesktop ? 32 : 28,
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: isDesktop ? 20 : 15),
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Josefin Sans',
-                      fontSize: 24,
+                      fontSize: isDesktop ? 24 : 20,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: isDesktop ? 12 : 8),
                   Text(
                     description,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Josefin Sans',
-                      fontSize: 16,
+                      fontSize: isDesktop ? 16 : 14,
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       height: 1.6,

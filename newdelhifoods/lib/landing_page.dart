@@ -20,15 +20,13 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
   void initState() {
     super.initState();
 
-    // Hero section animation controller
     _heroController = AnimationController(
-      duration: Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    // Hero section animations
-    _heroSlideAnimation = Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero)
-        .animate(
+    _heroSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
           CurvedAnimation(parent: _heroController, curve: Curves.easeOutCubic),
         );
 
@@ -36,7 +34,6 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
       CurvedAnimation(parent: _heroController, curve: Curves.easeInOut),
     );
 
-    // Start hero animation
     _heroController.forward();
   }
 
@@ -48,7 +45,9 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenWidth < 600; // breakpoint for mobile devices
 
     return AnimatedBuilder(
       animation: _heroController,
@@ -60,7 +59,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
             child: Container(
               width: double.infinity,
               height: screenHeight,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/background_landing.png'),
                   fit: BoxFit.cover,
@@ -76,30 +75,30 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    stops: [0.0, 0.5, 1.0],
+                    stops: const [0.0, 0.5, 1.0],
                   ),
                 ),
                 child: SafeArea(
                   child: Stack(
                     children: [
-                      // Header Section
                       _buildHeader(context),
-
-                      // Main Hero Content
                       Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 8 : 20,
+                          ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _buildBadge(),
-                              SizedBox(height: 30),
-                              _buildCenteredHeading(),
-                              SizedBox(height: 20),
-                              _buildCenteredDescription(),
-                              SizedBox(height: 40),
-                              _buildCenteredActionButtons(),
+                              if (!isMobile)
+                                _buildBadge(), // Hide badge on mobile
+                              SizedBox(height: isMobile ? 18 : 30),
+                              _buildCenteredHeading(isMobile),
+                              SizedBox(height: isMobile ? 12 : 20),
+                              _buildCenteredDescription(isMobile),
+                              SizedBox(height: isMobile ? 22 : 40),
+                              _buildCenteredActionButtons(isMobile),
                             ],
                           ),
                         ),
@@ -229,14 +228,12 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
                     SizedBox(width: 40),
                     _buildNavItem('Certifications', 3),
                     SizedBox(width: 40),
-                    // Auth Buttons
                     _buildAuthButton('Login', true),
                     SizedBox(width: 16),
                     _buildAuthButton('Sign Up', false),
                   ],
                 ),
               ] else ...[
-                // Mobile Menu Icon
                 IconButton(
                   onPressed: () {
                     _showMobileMenu(context);
@@ -264,7 +261,6 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
-                  // Scroll to respective sections
                   _scrollToSection(index);
                 },
                 child: AnimatedContainer(
@@ -385,10 +381,9 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
     );
   }
 
-  Widget _buildCenteredHeading() {
+  Widget _buildCenteredHeading(bool isMobile) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 768;
-    final isMobile = screenWidth < 600;
 
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 1200),
@@ -403,7 +398,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
               text: TextSpan(
                 style: TextStyle(
                   fontFamily: 'Josefin Sans',
-                  fontSize: isDesktop ? 56 : (isMobile ? 36 : 42),
+                  fontSize: isDesktop ? 56 : (isMobile ? 30 : 40),
                   fontWeight: FontWeight.w700,
                   height: 1.2,
                   letterSpacing: -0.5,
@@ -480,7 +475,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
     );
   }
 
-  Widget _buildCenteredDescription() {
+  Widget _buildCenteredDescription(bool isMobile) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 768;
 
@@ -494,7 +489,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
             opacity: value,
             child: Container(
               constraints: BoxConstraints(maxWidth: 800),
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(isMobile ? 12 : 20),
               decoration: BoxDecoration(
                 color: Colors.black.withAlpha(77),
                 borderRadius: BorderRadius.circular(15),
@@ -505,7 +500,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Josefin Sans',
-                  fontSize: isDesktop ? 18 : 16,
+                  fontSize: isDesktop ? 18 : (isMobile ? 14 : 16),
                   fontWeight: FontWeight.w400,
                   color: Colors.white.withAlpha(230),
                   height: 1.6,
@@ -519,10 +514,7 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
     );
   }
 
-  Widget _buildCenteredActionButtons() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-
+  Widget _buildCenteredActionButtons(bool isMobile) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 1000),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -631,7 +623,6 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
           child: InkWell(
             borderRadius: BorderRadius.circular(30),
             onTap: () {
-              // Scroll to About section
               _scrollToSection(1);
             },
             child: Padding(
@@ -661,8 +652,6 @@ class _LandingHeroSectionState extends State<LandingHeroSection>
   }
 
   void _scrollToSection(int sectionIndex) {
-    // This would need to be implemented with a scroll controller passed from the parent
-    // For now, we'll show a snackbar
     final sectionNames = ['Home', 'About', 'Products', 'Certifications'];
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

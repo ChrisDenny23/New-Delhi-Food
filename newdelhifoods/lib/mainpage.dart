@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:newdelhifoods/about_us.dart';
 import 'package:newdelhifoods/landing_page.dart';
+import 'package:newdelhifoods/product_display.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -261,183 +262,6 @@ class AboutUsPage extends StatelessWidget {
 }
 
 // Products Page Component
-class ProductsPage extends StatelessWidget {
-  const ProductsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 768;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 60 : 20,
-        vertical: 80,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF2D1B16), Color(0xFF3D2B26)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        children: [
-          TweenAnimationBuilder<double>(
-            duration: Duration(milliseconds: 800),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, (1 - value) * 30),
-                child: Opacity(
-                  opacity: value,
-                  child: Text(
-                    'Our Premium Products',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: isDesktop ? 48 : 36,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 50),
-
-          GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isDesktop
-                  ? 3
-                  : (MediaQuery.of(context).size.width > 600 ? 2 : 1),
-              crossAxisSpacing: 30,
-              mainAxisSpacing: 30,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              final products = [
-                {
-                  'title': 'Organic Grains',
-                  'icon': Icons.grain,
-                  'description': 'Fresh wheat, rice, and millets',
-                },
-                {
-                  'title': 'Pure Spices',
-                  'icon': Icons.spa,
-                  'description': 'Aromatic and authentic spices',
-                },
-                {
-                  'title': 'Healthy Pulses',
-                  'icon': Icons.eco,
-                  'description': 'Protein-rich lentils and beans',
-                },
-                {
-                  'title': 'Natural Oils',
-                  'icon': Icons.water_drop,
-                  'description': 'Cold-pressed cooking oils',
-                },
-                {
-                  'title': 'Organic Snacks',
-                  'icon': Icons.cookie,
-                  'description': 'Healthy and tasty snacks',
-                },
-                {
-                  'title': 'Fresh Vegetables',
-                  'icon': Icons.local_florist,
-                  'description': 'Farm-fresh organic vegetables',
-                },
-              ];
-
-              final product = products[index];
-              return _buildProductCard(
-                product['title'] as String,
-                product['icon'] as IconData,
-                product['description'] as String,
-                index,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCard(
-    String title,
-    IconData icon,
-    String description,
-    int index,
-  ) {
-    return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 600 + (index * 100)),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, (1 - value) * 50),
-          child: Opacity(
-            opacity: value,
-            child: Container(
-              padding: EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withAlpha(26),
-                    Colors.white.withAlpha(13),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withAlpha(51)),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFFC107), Color(0xFFFFB300)],
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Icon(icon, size: 40, color: Color(0xFF2D1B16)),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: 16,
-                      color: Colors.white.withAlpha(179),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
 
 // Certifications Page Component
 class CertificationsPage extends StatelessWidget {
@@ -822,9 +646,8 @@ class FooterPage extends StatelessWidget {
         ),
         SizedBox(height: 20),
         _buildContactItem(Icons.location_on, 'New Delhi, India'),
-        _buildContactItem(Icons.phone, '+91 98765 43210'),
+        _buildContactItem(Icons.phone, '+91 98100 26444'),
         _buildContactItem(Icons.email, 'info@newdelhifoods.com'),
-        _buildContactItem(Icons.access_time, 'Mon-Sat: 9AM-6PM'),
       ],
     );
   }
