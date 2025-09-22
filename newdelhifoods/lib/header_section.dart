@@ -2,8 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:newdelhifoods/cart_button.dart';
-import 'auth_dialog.dart'; // Import the separated authentication dialog
-// Import the separated cart button
+import 'package:newdelhifoods/auth_page.dart'; // Import the new auth page
 
 class HeaderSection extends StatefulWidget {
   final int cartItemCount;
@@ -29,7 +28,11 @@ class _HeaderSectionState extends State<HeaderSection> {
         vertical: 16,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF043C3E),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF043C3E), Color(0xFF065A5D)],
+        ),
         borderRadius: isMobile
             ? null
             : const BorderRadius.only(
@@ -38,9 +41,9 @@ class _HeaderSectionState extends State<HeaderSection> {
               ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -48,127 +51,298 @@ class _HeaderSectionState extends State<HeaderSection> {
         bottom: false,
         child: Row(
           children: [
-            // Menu Icon
+            // Menu Icon for Mobile
             if (isMobile)
-              IconButton(
-                onPressed: () => _showMobileMenu(context),
-                icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  onPressed: () => _showMobileMenu(context),
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                ),
               )
             else
               const SizedBox(width: 8),
 
-            // Logo and Brand Name
+            // Enhanced Logo and Brand Name
             Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF043C3E).withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(8),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: const Icon(
-                    Icons.shopping_cart,
+                    Icons.storefront,
                     color: Colors.white,
-                    size: 20,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'New Delhi Foods',
-                  style: TextStyle(
-                    fontFamily: 'Josefin Sans',
-                    fontSize: isMobile ? 20 : 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'New Delhi Foods',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: isMobile ? 18 : 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Text(
+                      'Fresh & Fast Delivery',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.8),
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
 
             const Spacer(),
 
-            // Search Bar (Desktop only)
+            // Enhanced Search Bar (Desktop only)
             if (!isMobile) ...[
               Container(
-                width: 400,
-                height: 40,
+                width: 450,
+                height: 45,
                 margin: const EdgeInsets.symmetric(horizontal: 32),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search for Grocery, Stores, Vegetable or Meat',
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(12),
+                      child: const Icon(
+                        Icons.search,
+                        color: Color(0xFF043C3E),
+                        size: 20,
+                      ),
+                    ),
+                    suffixIcon: Container(
+                      margin: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9ACD32),
+                        width: 2,
+                      ),
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
-                      vertical: 8,
+                      vertical: 12,
                     ),
                   ),
                 ),
               ),
             ],
 
-            // Quick Delivery Badge & Cart
+            // Action Buttons Section
             Row(
               children: [
+                // Quick Delivery Badge (Desktop only)
                 if (!isMobile) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: 16,
+                      vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFC107),
-                      borderRadius: BorderRadius.circular(15),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFC107), Color(0xFFFFB300)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(
-                          Icons.bolt,
+                          Icons.flash_on,
                           color: Color(0xFF2D5A4A),
                           size: 16,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 6),
                         Text(
-                          'Order now and get it within 15 min!',
+                          'Order now - 15 min delivery!',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             color: const Color(0xFF2D5A4A),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 20),
                 ],
 
-                // Dynamic Cart Button
+                // Cart Button
                 CartButton(
                   itemCount: widget.cartItemCount,
                   onPressed: widget.onCartPressed,
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
 
-                // Profile Avatar
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: const Color(0xFF9ACD32),
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 20,
+                // Login & Signup Buttons
+                if (!isMobile) ...[
+                  // Login Button
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextButton(
+                      onPressed: () => _navigateToAuth(context, true),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+
+                  // Signup Button
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF9ACD32).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextButton(
+                      onPressed: () => _navigateToAuth(context, false),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  // Mobile Auth Button
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: IconButton(
+                      onPressed: () => _navigateToAuth(context, true),
+                      icon: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ],
@@ -177,10 +351,29 @@ class _HeaderSectionState extends State<HeaderSection> {
     );
   }
 
-  void _showAuthDialog(bool isLogin) {
-    showDialog(
-      context: context,
-      builder: (context) => AuthDialog(isLogin: isLogin),
+  void _navigateToAuth(BuildContext context, bool isLogin) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            AuthPage(isLogin: isLogin),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOutCubic;
+
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
     );
   }
 
@@ -207,10 +400,14 @@ class _HeaderSectionState extends State<HeaderSection> {
             alignment: Alignment.centerLeft,
             child: Material(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.75,
+                width: MediaQuery.of(context).size.width * 0.8,
                 height: MediaQuery.of(context).size.height,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF043C3E), // Match app bar color
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF043C3E), Color(0xFF065A5D)],
+                  ),
                 ),
                 child: SafeArea(
                   child: Padding(
@@ -218,7 +415,7 @@ class _HeaderSectionState extends State<HeaderSection> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Close button and title
+                        // Header
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -231,19 +428,66 @@ class _HeaderSectionState extends State<HeaderSection> {
                                 color: Colors.white,
                               ),
                             ),
-                            IconButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 24,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: IconButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        // Search Bar
+
                         const SizedBox(height: 30),
+
+                        // Mobile Search
+                        Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search products...',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 14,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Color(0xFF043C3E),
+                                size: 20,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        // Menu Items
                         Expanded(
                           child: SingleChildScrollView(
                             child: Column(
@@ -255,25 +499,35 @@ class _HeaderSectionState extends State<HeaderSection> {
                                   () {},
                                 ),
                                 _buildMobileMenuItem(
+                                  'Offers',
+                                  Icons.local_offer,
+                                  () {},
+                                ),
+                                _buildMobileMenuItem(
                                   'About',
-                                  Icons.info,
+                                  Icons.info_outline,
                                   () {},
                                 ),
                                 _buildMobileMenuItem(
                                   'Contact',
-                                  Icons.contact_mail,
+                                  Icons.contact_support,
                                   () {},
                                 ),
+
+                                const SizedBox(height: 20),
                                 const Divider(color: Colors.white24),
+                                const SizedBox(height: 20),
+
+                                // Auth Buttons for Mobile
                                 _buildMobileMenuItem(
                                   'Login',
                                   Icons.login,
-                                  () => _showAuthDialog(true),
+                                  () => _navigateToAuth(context, true),
                                 ),
                                 _buildMobileMenuItem(
                                   'Sign Up',
                                   Icons.person_add,
-                                  () => _showAuthDialog(false),
+                                  () => _navigateToAuth(context, false),
                                 ),
                               ],
                             ),
@@ -293,11 +547,21 @@ class _HeaderSectionState extends State<HeaderSection> {
 
   Widget _buildMobileMenuItem(String title, IconData icon, VoidCallback onTap) {
     return Container(
-      height: 50,
       margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
         dense: true,
-        leading: Icon(icon, color: Colors.white, size: 20),
+        leading: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: const Color(0xFF9ACD32).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: const Color(0xFF9ACD32), size: 18),
+        ),
         title: Text(
           title,
           style: const TextStyle(
@@ -306,6 +570,11 @@ class _HeaderSectionState extends State<HeaderSection> {
             fontWeight: FontWeight.w500,
             color: Colors.white,
           ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white54,
+          size: 14,
         ),
         onTap: () {
           Navigator.pop(context);

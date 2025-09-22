@@ -17,7 +17,7 @@ class _ProductPageState extends State<ProductPage> {
   // Products data
   final List<Map<String, dynamic>> products = [
     {
-      'name': 'Beetroot',
+      'name': 'Almonds',
       'subtitle': 'Local shop',
       'weight': '500 gm.',
       'price': 17.0,
@@ -65,16 +65,16 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.eco,
     },
     {
-      'name': 'Fresh Carrots',
-      'subtitle': 'Organic',
+      'name': 'Pistachios',
+      'subtitle': 'Dry Fruits',
       'weight': '500 gm.',
       'price': 8.0,
       'image': 'assets/images/prod7.jpg',
       'icon': Icons.agriculture,
     },
     {
-      'name': 'Cucumber',
-      'subtitle': 'Fresh',
+      'name': 'Brown Rice',
+      'subtitle': 'Grains',
       'weight': '500 gm.',
       'price': 6.0,
       'image': 'assets/images/prod8.jpg',
@@ -89,8 +89,8 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.fastfood,
     },
     {
-      'name': 'Fresh Cabbage',
-      'subtitle': 'Organic',
+      'name': 'Chickpeas',
+      'subtitle': 'Pulses',
       'weight': '500 gm.',
       'price': 9.0,
       'image': 'assets/images/prod10.jpg',

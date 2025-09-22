@@ -208,10 +208,10 @@ class _CertificationsPageState extends State<CertificationsPage>
         'color': const Color(0xFFFFC107),
       },
       {
-        'title': 'Organic Certified',
-        'subtitle': 'Natural & Pure',
+        'title': 'GST Registration',
+        'subtitle': 'Tax Compliant',
         'icon': Icons.eco_outlined,
-        'image': 'assets/images/organic.JPG',
+        'image': 'assets/images/gst_rc.jpg',
         'color': const Color(0xFF8BC34A),
       },
     ];
