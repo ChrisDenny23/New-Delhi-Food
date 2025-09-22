@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:newdelhifoods/cart_button.dart';
-import 'package:newdelhifoods/auth_page.dart'; // Import the new auth page
+import 'auth_popup.dart'; // Import the new auth popup
 
 class HeaderSection extends StatefulWidget {
   final int cartItemCount;
@@ -261,7 +261,8 @@ class _HeaderSectionState extends State<HeaderSection> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: TextButton(
-                      onPressed: () => _navigateToAuth(context, true),
+                      onPressed: () =>
+                          AuthPopup.showAuthModal(context, isLogin: true),
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -296,7 +297,8 @@ class _HeaderSectionState extends State<HeaderSection> {
                       ],
                     ),
                     child: TextButton(
-                      onPressed: () => _navigateToAuth(context, false),
+                      onPressed: () =>
+                          AuthPopup.showAuthModal(context, isLogin: false),
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -334,7 +336,8 @@ class _HeaderSectionState extends State<HeaderSection> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
-                      onPressed: () => _navigateToAuth(context, true),
+                      onPressed: () =>
+                          AuthPopup.showAuthModal(context, isLogin: true),
                       icon: const Icon(
                         Icons.person,
                         color: Colors.white,
@@ -347,32 +350,6 @@ class _HeaderSectionState extends State<HeaderSection> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _navigateToAuth(BuildContext context, bool isLogin) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            AuthPage(isLogin: isLogin),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOutCubic;
-
-          var tween = Tween(
-            begin: begin,
-            end: end,
-          ).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 400),
       ),
     );
   }
@@ -519,15 +496,23 @@ class _HeaderSectionState extends State<HeaderSection> {
                                 const SizedBox(height: 20),
 
                                 // Auth Buttons for Mobile
-                                _buildMobileMenuItem(
-                                  'Login',
-                                  Icons.login,
-                                  () => _navigateToAuth(context, true),
-                                ),
+                                _buildMobileMenuItem('Login', Icons.login, () {
+                                  Navigator.pop(context);
+                                  AuthPopup.showAuthModal(
+                                    context,
+                                    isLogin: true,
+                                  );
+                                }),
                                 _buildMobileMenuItem(
                                   'Sign Up',
                                   Icons.person_add,
-                                  () => _navigateToAuth(context, false),
+                                  () {
+                                    Navigator.pop(context);
+                                    AuthPopup.showAuthModal(
+                                      context,
+                                      isLogin: false,
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -576,10 +561,7 @@ class _HeaderSectionState extends State<HeaderSection> {
           color: Colors.white54,
           size: 14,
         ),
-        onTap: () {
-          Navigator.pop(context);
-          onTap();
-        },
+        onTap: onTap,
       ),
     );
   }
