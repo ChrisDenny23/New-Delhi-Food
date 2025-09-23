@@ -1,7 +1,13 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'dart:ui';
+import 'package:newdelhifoods/config.dart';
 
 class AuthPopup {
   static void showAuthModal(BuildContext context, {bool isLogin = true}) {
@@ -54,13 +60,29 @@ class _AuthModalContentState extends State<AuthModalContent>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
+  final _storage = const FlutterSecureStorage();
+
+  late Dio _dio;
+  late CookieJar _cookieJar;
+
   bool _obscurePassword = true;
   bool _isLoading = false;
+
+  // Replace with your actual backend URL
 
   @override
   void initState() {
     super.initState();
     _isLogin = widget.initialIsLogin;
+
+    // Initialize Dio with conditional cookie support
+    _cookieJar = CookieJar();
+    _dio = Dio();
+
+    // Only add CookieManager on non-web platforms
+    if (!kIsWeb) {
+      _dio.interceptors.add(CookieManager(_cookieJar));
+    }
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -102,35 +124,152 @@ class _AuthModalContentState extends State<AuthModalContent>
     _animationController.forward();
   }
 
+  Future<void> _login(String email, String password) async {
+    try {
+      final response = await _dio.post(
+        '$apiBaseUrl/auth/login',
+        data: {'email': email, 'password': password},
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          // Enable sending/receiving cookies on web
+          extra: {'withCredentials': true},
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        // Store access token in secure storage
+        await _storage.write(
+          key: 'access_token',
+          value: response.data['accessToken'],
+        );
+
+        // Show success message
+        _showMessage('Login successful!', isSuccess: true);
+
+        // Close modal
+        Navigator.of(context).pop();
+      } else {
+        // Handle login error
+        String errorMessage = response.data['error'] ?? 'Login failed';
+        _showMessage(errorMessage, isSuccess: false);
+      }
+    } on DioException catch (e) {
+      String errorMessage = 'Network error. Please check your connection.';
+
+      if (e.response != null) {
+        if (e.response?.data != null && e.response?.data['error'] != null) {
+          errorMessage = e.response?.data['error'];
+        } else if (e.response?.statusCode == 401) {
+          errorMessage = 'Invalid email or password';
+        } else if (e.response?.statusCode == 400) {
+          errorMessage = 'Please check your email and password';
+        }
+      }
+
+      _showMessage(errorMessage, isSuccess: false);
+    } catch (e) {
+      _showMessage(
+        'An unexpected error occurred. Please try again.',
+        isSuccess: false,
+      );
+    }
+  }
+
+  Future<void> _signup(String name, String email, String password) async {
+    try {
+      final response = await _dio.post(
+        '$apiBaseUrl/auth/signup',
+        data: {
+          'email': email,
+          'password': password,
+          'userdata': {'name': name},
+        },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          // Enable sending/receiving cookies on web
+          extra: {'withCredentials': true},
+        ),
+      );
+
+      if (response.statusCode == 201 && response.data['success'] == true) {
+        // Store access token in secure storage if provided
+        if (response.data['accessToken'] != null) {
+          await _storage.write(
+            key: 'access_token',
+            value: response.data['accessToken'],
+          );
+        }
+
+        // Show success message
+        _showMessage(
+          response.data['message'] ?? 'Account created successfully!',
+          isSuccess: true,
+        );
+
+        // Close modal
+        Navigator.of(context).pop();
+      } else {
+        // Handle signup error
+        String errorMessage = response.data['error'] ?? 'Signup failed';
+        _showMessage(errorMessage, isSuccess: false);
+      }
+    } on DioException catch (e) {
+      String errorMessage = 'Network error. Please check your connection.';
+
+      if (e.response != null) {
+        if (e.response?.data != null && e.response?.data['error'] != null) {
+          errorMessage = e.response?.data['error'];
+        } else if (e.response?.statusCode == 400) {
+          errorMessage = 'Please check your information and try again';
+        }
+      }
+
+      _showMessage(errorMessage, isSuccess: false);
+    } catch (e) {
+      _showMessage(
+        'An unexpected error occurred. Please try again.',
+        isSuccess: false,
+      );
+    }
+  }
+
+  void _showMessage(String message, {required bool isSuccess}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isSuccess
+            ? const Color(0xFF9ACD32)
+            : Colors.red.shade400,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isLogin ? 'Login successful!' : 'Account created successfully!',
-          ),
-          backgroundColor: const Color(0xFF9ACD32),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-
-      // Close modal
-      Navigator.of(context).pop();
+      try {
+        if (_isLogin) {
+          await _login(_emailController.text.trim(), _passwordController.text);
+        } else {
+          await _signup(
+            _nameController.text.trim(),
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -218,7 +357,6 @@ class _AuthModalContentState extends State<AuthModalContent>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 40),
-
             // Logo with glass effect
             _buildCloseButton(),
           ],
