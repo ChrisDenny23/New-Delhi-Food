@@ -1,4 +1,4 @@
-// fixed_product_page.dart
+// updated_product_page.dart
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
@@ -14,13 +14,12 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final CartManager cartManager = CartManager();
 
-  // Products data
+  // Products data (prices removed)
   final List<Map<String, dynamic>> products = [
     {
       'name': 'Almonds',
       'subtitle': 'Local shop',
       'weight': '500 gm.',
-      'price': 17.0,
       'image': 'assets/images/prod1.jpg',
       'icon': Icons.eco,
     },
@@ -28,7 +27,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Raw Sugar',
       'subtitle': 'Local shop',
       'weight': '500 gm.',
-      'price': 12.0,
       'image': 'assets/images/prod2.jpg',
       'icon': Icons.local_grocery_store,
     },
@@ -36,7 +34,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Cashew Nuts',
       'subtitle': 'Dry Fruit',
       'weight': '500 gm.',
-      'price': 14.0,
       'image': 'assets/images/prod3.jpg',
       'icon': Icons.inventory_2,
     },
@@ -44,7 +41,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Millets',
       'subtitle': 'Organic',
       'weight': '500 gm.',
-      'price': 16.0,
       'image': 'assets/images/prod4.jpg',
       'icon': Icons.restaurant,
     },
@@ -52,7 +48,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Garam Masala',
       'subtitle': 'Spices',
       'weight': '500 gm.',
-      'price': 18.0,
       'image': 'assets/images/prod5.jpg',
       'icon': Icons.local_drink,
     },
@@ -60,7 +55,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Turmeric Powder',
       'subtitle': 'Spices',
       'weight': '500 gm.',
-      'price': 22.0,
       'image': 'assets/images/prod6.jpg',
       'icon': Icons.eco,
     },
@@ -68,7 +62,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Pistachios',
       'subtitle': 'Dry Fruits',
       'weight': '500 gm.',
-      'price': 8.0,
       'image': 'assets/images/prod7.jpg',
       'icon': Icons.agriculture,
     },
@@ -76,7 +69,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Brown Rice',
       'subtitle': 'Grains',
       'weight': '500 gm.',
-      'price': 6.0,
       'image': 'assets/images/prod8.jpg',
       'icon': Icons.local_florist,
     },
@@ -84,7 +76,6 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Raisins',
       'subtitle': 'Dry Fruits',
       'weight': '500 gm.',
-      'price': 15.0,
       'image': 'assets/images/prod9.jpg',
       'icon': Icons.fastfood,
     },
@@ -92,9 +83,42 @@ class _ProductPageState extends State<ProductPage> {
       'name': 'Chickpeas',
       'subtitle': 'Pulses',
       'weight': '500 gm.',
-      'price': 9.0,
       'image': 'assets/images/prod10.jpg',
       'icon': Icons.grass,
+    },
+  ];
+
+  // Gift packs data
+  final List<Map<String, dynamic>> giftPacks = [
+    {
+      'name': 'Small Gift Pack',
+      'subtitle': 'Perfect for trying',
+      'weight': '500g - 1kg',
+      'contents': '2-3 Spices • 1-2 Grains • 1-2 Millets • 1-2 Pulses',
+      'priceRange': '₹500 - ₹1,000',
+      'image': 'assets/images/gift_small.jpg',
+      'icon': Icons.card_giftcard,
+      'color': Color(0xFF7CB342),
+    },
+    {
+      'name': 'Medium Gift Pack',
+      'subtitle': 'Great for families',
+      'weight': '1kg - 2kg',
+      'contents': '4-5 Spices • 2-3 Grains • 2-3 Millets • 2-3 Pulses',
+      'priceRange': '₹1,000 - ₹2,500',
+      'image': 'assets/images/gift_medium.jpg',
+      'icon': Icons.redeem,
+      'color': Color(0xFFB87333),
+    },
+    {
+      'name': 'Large Gift Pack',
+      'subtitle': 'Premium collection',
+      'weight': '2kg - 5kg',
+      'contents': '6-7 Spices • 3-4 Grains • 3-4 Millets • 3-4 Pulses',
+      'priceRange': '₹2,500 - ₹5,000',
+      'image': 'assets/images/gift_large.jpg',
+      'icon': Icons.local_grocery_store,
+      'color': Color(0xFFD4522A),
     },
   ];
 
@@ -120,6 +144,10 @@ class _ProductPageState extends State<ProductPage> {
           children: [
             // Products Section
             _buildProductsSection(screenWidth),
+            const SizedBox(height: 60),
+
+            // Gift Section
+            _buildGiftSection(screenWidth),
             const SizedBox(height: 40),
           ],
         ),
@@ -142,9 +170,9 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   double _getChildAspectRatio(double screenWidth) {
-    if (screenWidth > 768) return 0.8;
-    if (screenWidth > 480) return 0.75;
-    return 0.7;
+    if (screenWidth > 768) return 0.85;
+    if (screenWidth > 480) return 0.8;
+    return 0.75;
   }
 
   double _getGridSpacing(double screenWidth) {
@@ -219,7 +247,6 @@ class _ProductPageState extends State<ProductPage> {
                     product['name'] as String,
                     product['subtitle'] as String,
                     product['weight'] as String,
-                    product['price'] as double,
                     product['image'] as String,
                     product['icon'] as IconData,
                     screenWidth,
@@ -233,23 +260,248 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  double _getHeaderFontSize(double screenWidth) {
-    if (screenWidth > 1200) return 36;
-    if (screenWidth > 768) return 32;
-    if (screenWidth > 480) return 28;
-    return 24;
+  Widget _buildGiftSection(double screenWidth) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(_getHorizontalPadding(screenWidth) * 0.8),
+      decoration: BoxDecoration(
+        color: Color(0xFF2D5A4A),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF2D5A4A).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Gift Section Header
+          Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth > 480 ? 20 : 16,
+                  vertical: screenWidth > 480 ? 12 : 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Color(0xFFD4522A),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.card_giftcard,
+                      color: Colors.white,
+                      size: screenWidth > 480 ? 24 : 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Taste of India',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: screenWidth > 480 ? 18 : 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: screenWidth > 480 ? 16 : 12),
+              Text(
+                'Experience the richness of Indian cuisine with our carefully curated gift pack',
+                style: TextStyle(
+                  fontFamily: 'Josefin Sans',
+                  fontSize: _getSubHeaderFontSize(screenWidth),
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          SizedBox(height: screenWidth > 480 ? 30 : 24),
+
+          // Gift Packs Grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: screenWidth > 900
+                  ? 3
+                  : (screenWidth > 600 ? 2 : 1),
+              childAspectRatio: screenWidth > 900
+                  ? 0.85
+                  : (screenWidth > 600 ? 0.9 : 1.1),
+              crossAxisSpacing: _getGridSpacing(screenWidth),
+              mainAxisSpacing: _getGridSpacing(screenWidth),
+            ),
+            itemCount: giftPacks.length,
+            itemBuilder: (context, index) {
+              final pack = giftPacks[index];
+              return _buildGiftPackCard(pack, screenWidth);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
-  double _getSeeMoreFontSize(double screenWidth) {
-    if (screenWidth > 768) return 16;
-    if (screenWidth > 480) return 15;
-    return 14;
-  }
+  Widget _buildGiftPackCard(Map<String, dynamic> pack, double screenWidth) {
+    final isMobile = screenWidth <= 480;
 
-  double _getArrowIconSize(double screenWidth) {
-    if (screenWidth > 768) return 20;
-    if (screenWidth > 480) return 18;
-    return 16;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: (pack['color'] as Color).withOpacity(0.15),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Gift Pack Image/Icon
+          Expanded(
+            flex: 2,
+            child: Container(
+              width: double.infinity,
+              margin: EdgeInsets.all(isMobile ? 16 : 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/gift.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            (pack['color'] as Color).withOpacity(0.1),
+                            (pack['color'] as Color).withOpacity(0.2),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          pack['icon'] as IconData,
+                          size: screenWidth > 768
+                              ? 60
+                              : (screenWidth > 480 ? 50 : 40),
+                          color: pack['color'] as Color,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          // Gift Pack Info
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    pack['name'] as String,
+                    style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: _getGiftNameFontSize(screenWidth),
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF2D1B16),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    pack['subtitle'] as String,
+                    style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: _getGiftSubtitleFontSize(screenWidth),
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF666666),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: (pack['color'] as Color).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      pack['weight'] as String,
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: _getGiftWeightFontSize(screenWidth),
+                        fontWeight: FontWeight.w600,
+                        color: pack['color'] as Color,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    pack['contents'] as String,
+                    style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: _getGiftContentsFontSize(screenWidth),
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF888888),
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Spacer(),
+                  Text(
+                    pack['priceRange'] as String,
+                    style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: _getGiftPriceFontSize(screenWidth),
+                      fontWeight: FontWeight.w700,
+                      color: pack['color'] as Color,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  // Contact for more info
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB87333).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Contact for more info',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: _getGiftContactTextSize(screenWidth),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFB87333),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildProductCard(
@@ -257,7 +509,6 @@ class _ProductPageState extends State<ProductPage> {
     String name,
     String subtitle,
     String weight,
-    double price,
     String imagePath,
     IconData fallbackIcon,
     double screenWidth,
@@ -354,13 +605,21 @@ class _ProductPageState extends State<ProductPage> {
                       color: const Color(0xFF888888),
                     ),
                   ),
-                  Text(
-                    '₹${price.toStringAsFixed(0)}',
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: _getPriceFontSize(screenWidth),
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2D1B16),
+                  // Contact info instead of price
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB87333).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Contact for price',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: _getContactTextSize(screenWidth),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFB87333),
+                      ),
                     ),
                   ),
                 ],
@@ -368,7 +627,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
 
-          // Add Button / Quantity Controls
+          // Add Button / Quantity Controls (unchanged logic)
           Container(
             width: double.infinity,
             height: _getButtonHeight(screenWidth),
@@ -460,7 +719,7 @@ class _ProductPageState extends State<ProductPage> {
                         name: name,
                         subtitle: subtitle,
                         weight: weight,
-                        price: price,
+                        price: 0.0, // Price removed, set to 0
                         image: imagePath,
                         icon: fallbackIcon,
                       );
@@ -488,6 +747,31 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   // Helper methods for responsive sizing
+  double _getHeaderFontSize(double screenWidth) {
+    if (screenWidth > 1200) return 36;
+    if (screenWidth > 768) return 32;
+    if (screenWidth > 480) return 28;
+    return 24;
+  }
+
+  double _getSubHeaderFontSize(double screenWidth) {
+    if (screenWidth > 768) return 18;
+    if (screenWidth > 480) return 16;
+    return 14;
+  }
+
+  double _getSeeMoreFontSize(double screenWidth) {
+    if (screenWidth > 768) return 16;
+    if (screenWidth > 480) return 15;
+    return 14;
+  }
+
+  double _getArrowIconSize(double screenWidth) {
+    if (screenWidth > 768) return 20;
+    if (screenWidth > 480) return 18;
+    return 16;
+  }
+
   double _getFallbackIconSize(double screenWidth) {
     if (screenWidth > 768) return 40;
     if (screenWidth > 480) return 36;
@@ -513,11 +797,10 @@ class _ProductPageState extends State<ProductPage> {
     return 10;
   }
 
-  double _getPriceFontSize(double screenWidth) {
-    if (screenWidth > 1200) return 22;
-    if (screenWidth > 768) return 20;
-    if (screenWidth > 480) return 18;
-    return 16;
+  double _getContactTextSize(double screenWidth) {
+    if (screenWidth > 768) return 12;
+    if (screenWidth > 480) return 11;
+    return 10;
   }
 
   double _getButtonHeight(double screenWidth) {
@@ -548,5 +831,42 @@ class _ProductPageState extends State<ProductPage> {
     if (screenWidth > 768) return 24;
     if (screenWidth > 480) return 22;
     return 20;
+  }
+
+  // Gift pack sizing methods
+  double _getGiftNameFontSize(double screenWidth) {
+    if (screenWidth > 768) return 20;
+    if (screenWidth > 480) return 18;
+    return 16;
+  }
+
+  double _getGiftSubtitleFontSize(double screenWidth) {
+    if (screenWidth > 768) return 14;
+    if (screenWidth > 480) return 13;
+    return 12;
+  }
+
+  double _getGiftWeightFontSize(double screenWidth) {
+    if (screenWidth > 768) return 12;
+    if (screenWidth > 480) return 11;
+    return 10;
+  }
+
+  double _getGiftContentsFontSize(double screenWidth) {
+    if (screenWidth > 768) return 11;
+    if (screenWidth > 480) return 10;
+    return 9;
+  }
+
+  double _getGiftPriceFontSize(double screenWidth) {
+    if (screenWidth > 768) return 18;
+    if (screenWidth > 480) return 16;
+    return 14;
+  }
+
+  double _getGiftContactTextSize(double screenWidth) {
+    if (screenWidth > 768) return 11;
+    if (screenWidth > 480) return 10;
+    return 9;
   }
 }
