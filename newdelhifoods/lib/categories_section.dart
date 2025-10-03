@@ -1,6 +1,8 @@
+// updated_categories_section.dart
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'category_products_page.dart'; // Import the category products page
 
 class CategoriesSection extends StatelessWidget {
   const CategoriesSection({super.key});
@@ -81,65 +83,83 @@ class CategoriesSection extends StatelessWidget {
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       final category = categories[index];
-                      return Container(
-                        width: isMobile ? 120 : (isTablet ? 150 : 180),
-                        margin: EdgeInsets.only(right: isMobile ? 12 : 16),
-                        padding: EdgeInsets.all(isMobile ? 12 : 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to category products page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CategoryProductsPage(
+                                categoryTitle: category['title'] as String,
+                                categoryColor: category['color'] as Color,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: isMobile ? 32 : 40,
-                              height: isMobile ? 32 : 40,
-                              decoration: BoxDecoration(
-                                color: category['color'] as Color,
-                                borderRadius: BorderRadius.circular(
-                                  isMobile ? 10 : 12,
+                          );
+                        },
+                        child: Container(
+                          width: isMobile ? 120 : (isTablet ? 150 : 180),
+                          margin: EdgeInsets.only(right: isMobile ? 12 : 16),
+                          padding: EdgeInsets.all(isMobile ? 12 : 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: isMobile ? 32 : 40,
+                                height: isMobile ? 32 : 40,
+                                decoration: BoxDecoration(
+                                  color: category['color'] as Color,
+                                  borderRadius: BorderRadius.circular(
+                                    isMobile ? 10 : 12,
+                                  ),
+                                ),
+                                child: Icon(
+                                  category['icon'] as IconData,
+                                  color: Colors.white,
+                                  size: isMobile ? 16 : 20,
                                 ),
                               ),
-                              child: Icon(
-                                category['icon'] as IconData,
-                                color: Colors.white,
-                                size: isMobile ? 16 : 20,
+                              SizedBox(height: isMobile ? 8 : 12),
+                              Text(
+                                category['title'] as String,
+                                style: TextStyle(
+                                  fontFamily: 'Josefin Sans',
+                                  fontSize: isMobile
+                                      ? 12
+                                      : (isTablet ? 14 : 16),
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF2D1B16),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            SizedBox(height: isMobile ? 8 : 12),
-                            Text(
-                              category['title'] as String,
-                              style: TextStyle(
-                                fontFamily: 'Josefin Sans',
-                                fontSize: isMobile ? 12 : (isTablet ? 14 : 16),
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF2D1B16),
+                              SizedBox(height: isMobile ? 2 : 4),
+                              Text(
+                                category['subtitle'] as String,
+                                style: TextStyle(
+                                  fontFamily: 'Josefin Sans',
+                                  fontSize: isMobile
+                                      ? 10
+                                      : (isTablet ? 12 : 14),
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: isMobile ? 2 : 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: isMobile ? 2 : 4),
-                            Text(
-                              category['subtitle'] as String,
-                              style: TextStyle(
-                                fontFamily: 'Josefin Sans',
-                                fontSize: isMobile ? 10 : (isTablet ? 12 : 14),
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey[600],
-                              ),
-                              maxLines: isMobile ? 2 : 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -152,11 +172,89 @@ class CategoriesSection extends StatelessWidget {
                   Builder(
                     builder: (context) => GestureDetector(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Show all categories'),
-                            backgroundColor: Color(0xFF4CAF50),
-                          ),
+                        // Show dialog with all categories
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text(
+                                'All Categories',
+                                style: TextStyle(
+                                  fontFamily: 'Josefin Sans',
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: categories.length,
+                                  itemBuilder: (context, index) {
+                                    final category = categories[index];
+                                    return ListTile(
+                                      leading: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: category['color'] as Color,
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          category['icon'] as IconData,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        category['title'] as String,
+                                        style: const TextStyle(
+                                          fontFamily: 'Josefin Sans',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        category['subtitle'] as String,
+                                        style: const TextStyle(
+                                          fontFamily: 'Josefin Sans',
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                CategoryProductsPage(
+                                                  categoryTitle:
+                                                      category['title']
+                                                          as String,
+                                                  categoryColor:
+                                                      category['color']
+                                                          as Color,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text(
+                                    'Close',
+                                    style: TextStyle(
+                                      fontFamily: 'Josefin Sans',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                       child: Container(
