@@ -10,8 +10,11 @@ import 'dart:ui';
 import 'package:newdelhifoods/config.dart';
 
 class AuthPopup {
-  static void showAuthModal(BuildContext context, {bool isLogin = true}) {
-    showGeneralDialog(
+  static Future<void> showAuthModal(
+    BuildContext context, {
+    bool isLogin = true,
+  }) async {
+    await showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: '',

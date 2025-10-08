@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:newdelhifoods/cart_button.dart';
 import 'auth_popup.dart'; // Import the new auth popup
 
@@ -15,6 +16,38 @@ class HeaderSection extends StatefulWidget {
 }
 
 class _HeaderSectionState extends State<HeaderSection> {
+  bool _isLoggedIn = false;
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final token = await _storage.read(key: 'access_token');
+    setState(() {
+      _isLoggedIn = token != null && token.isNotEmpty;
+    });
+  }
+
+  Future<void> _logout() async {
+    await _storage.delete(key: 'access_token');
+    setState(() {
+      _isLoggedIn = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Logged out successfully'),
+        backgroundColor: const Color(0xFF9ACD32),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -254,78 +287,155 @@ class _HeaderSectionState extends State<HeaderSection> {
 
                 // Login & Signup Buttons
                 if (!isMobile) ...[
-                  // Login Button
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white.withOpacity(0.3)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: TextButton(
-                      onPressed: () =>
-                          AuthPopup.showAuthModal(context, isLogin: true),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                  if (!_isLoggedIn) ...[
+                    // Login Button
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
                         ),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-
-                  // Signup Button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF9ACD32).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextButton(
-                      onPressed: () =>
-                          AuthPopup.showAuthModal(context, isLogin: false),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
+                      child: TextButton(
+                        onPressed: () async {
+                          await AuthPopup.showAuthModal(context, isLogin: true);
+                          await _checkLoginStatus();
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
                           ),
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.person_add,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
                             color: Colors.white,
-                            size: 16,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Signup Button
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF9ACD32).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
+                      child: TextButton(
+                        onPressed: () async {
+                          await AuthPopup.showAuthModal(
+                            context,
+                            isLogin: false,
+                          );
+                          await _checkLoginStatus();
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.person_add,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ] else ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF9ACD32), Color(0xFF7CB342)],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF9ACD32).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: PopupMenuButton<String>(
+                        onSelected: (value) async {
+                          if (value == 'logout') {
+                            await _logout();
+                          } else if (value == 'account') {
+                            // TODO: Navigate to account page
+                          } else if (value == 'orders') {
+                            // TODO: Navigate to orders page
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'account',
+                            child: Text('My Account'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'orders',
+                            child: Text('My Orders'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'logout',
+                            child: Text('Logout'),
+                          ),
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Account',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ] else ...[
                   // Mobile Auth Button
                   Container(
@@ -335,15 +445,51 @@ class _HeaderSectionState extends State<HeaderSection> {
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: IconButton(
-                      onPressed: () =>
-                          AuthPopup.showAuthModal(context, isLogin: true),
-                      icon: const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
+                    child: _isLoggedIn
+                        ? PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'logout') {
+                                await _logout();
+                              } else if (value == 'account') {
+                                // TODO: Navigate to account page
+                              } else if (value == 'orders') {
+                                // TODO: Navigate to orders page
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'account',
+                                child: Text('My Account'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'orders',
+                                child: Text('My Orders'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'logout',
+                                child: Text('Logout'),
+                              ),
+                            ],
+                            icon: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          )
+                        : IconButton(
+                            onPressed: () async {
+                              await AuthPopup.showAuthModal(
+                                context,
+                                isLogin: true,
+                              );
+                              await _checkLoginStatus();
+                            },
+                            icon: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
                   ),
                 ],
               ],
@@ -496,24 +642,57 @@ class _HeaderSectionState extends State<HeaderSection> {
                                 const SizedBox(height: 20),
 
                                 // Auth Buttons for Mobile
-                                _buildMobileMenuItem('Login', Icons.login, () {
-                                  Navigator.pop(context);
-                                  AuthPopup.showAuthModal(
-                                    context,
-                                    isLogin: true,
-                                  );
-                                }),
-                                _buildMobileMenuItem(
-                                  'Sign Up',
-                                  Icons.person_add,
-                                  () {
-                                    Navigator.pop(context);
-                                    AuthPopup.showAuthModal(
-                                      context,
-                                      isLogin: false,
-                                    );
-                                  },
-                                ),
+                                if (!_isLoggedIn) ...[
+                                  _buildMobileMenuItem(
+                                    'Login',
+                                    Icons.login,
+                                    () async {
+                                      Navigator.pop(context);
+                                      await AuthPopup.showAuthModal(
+                                        context,
+                                        isLogin: true,
+                                      );
+                                      await _checkLoginStatus();
+                                    },
+                                  ),
+                                  _buildMobileMenuItem(
+                                    'Sign Up',
+                                    Icons.person_add,
+                                    () async {
+                                      Navigator.pop(context);
+                                      await AuthPopup.showAuthModal(
+                                        context,
+                                        isLogin: false,
+                                      );
+                                      await _checkLoginStatus();
+                                    },
+                                  ),
+                                ] else ...[
+                                  _buildMobileMenuItem(
+                                    'My Account',
+                                    Icons.account_circle,
+                                    () {
+                                      Navigator.pop(context);
+                                      // TODO: Navigate to account page
+                                    },
+                                  ),
+                                  _buildMobileMenuItem(
+                                    'My Orders',
+                                    Icons.shopping_bag,
+                                    () {
+                                      Navigator.pop(context);
+                                      // TODO: Navigate to orders page
+                                    },
+                                  ),
+                                  _buildMobileMenuItem(
+                                    'Logout',
+                                    Icons.logout,
+                                    () async {
+                                      await _logout();
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
                               ],
                             ),
                           ),
