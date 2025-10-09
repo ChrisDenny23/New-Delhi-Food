@@ -638,7 +638,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                           itemBuilder: (context, index) {
                             final product = products[index];
                             return _buildProductCard(
-                              index,
+                              index as String,
                               product,
                               screenWidth,
                             );
@@ -654,7 +654,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
   }
 
   Widget _buildProductCard(
-    int productIndex,
+    String productIndex,
     Map<String, dynamic> product,
     double screenWidth,
   ) {

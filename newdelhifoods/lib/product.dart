@@ -1,8 +1,8 @@
-// updated_product_page.dart
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'cart_manager.dart';
+import 'all_products_page.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -14,9 +14,10 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final CartManager cartManager = CartManager();
 
-  // Products data (prices removed)
+  // Sample products data with string IDs (simulating UUIDs)
   final List<Map<String, dynamic>> products = [
     {
+      'id': 'product-1-almonds',
       'name': 'Almonds',
       'subtitle': 'Local shop',
       'weight': '500 gm.',
@@ -24,6 +25,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.eco,
     },
     {
+      'id': 'product-2-raw-sugar',
       'name': 'Raw Sugar',
       'subtitle': 'Local shop',
       'weight': '500 gm.',
@@ -31,6 +33,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.local_grocery_store,
     },
     {
+      'id': 'product-3-cashew-nuts',
       'name': 'Cashew Nuts',
       'subtitle': 'Dry Fruit',
       'weight': '500 gm.',
@@ -38,6 +41,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.inventory_2,
     },
     {
+      'id': 'product-4-millets',
       'name': 'Millets',
       'subtitle': 'Organic',
       'weight': '500 gm.',
@@ -45,6 +49,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.restaurant,
     },
     {
+      'id': 'product-5-garam-masala',
       'name': 'Garam Masala',
       'subtitle': 'Spices',
       'weight': '500 gm.',
@@ -52,6 +57,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.local_drink,
     },
     {
+      'id': 'product-6-turmeric-powder',
       'name': 'Turmeric Powder',
       'subtitle': 'Spices',
       'weight': '500 gm.',
@@ -59,6 +65,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.eco,
     },
     {
+      'id': 'product-7-pistachios',
       'name': 'Pistachios',
       'subtitle': 'Dry Fruits',
       'weight': '500 gm.',
@@ -66,6 +73,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.agriculture,
     },
     {
+      'id': 'product-8-brown-rice',
       'name': 'Brown Rice',
       'subtitle': 'Grains',
       'weight': '500 gm.',
@@ -73,6 +81,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.local_florist,
     },
     {
+      'id': 'product-9-raisins',
       'name': 'Raisins',
       'subtitle': 'Dry Fruits',
       'weight': '500 gm.',
@@ -80,6 +89,7 @@ class _ProductPageState extends State<ProductPage> {
       'icon': Icons.fastfood,
     },
     {
+      'id': 'product-10-chickpeas',
       'name': 'Chickpeas',
       'subtitle': 'Pulses',
       'weight': '500 gm.',
@@ -202,25 +212,36 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'See more',
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: _getSeeMoreFontSize(screenWidth),
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFFB87333),
+              // Updated "See more" button with navigation
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AllProductsPage(),
                     ),
-                  ),
-                  SizedBox(width: screenWidth > 480 ? 8 : 4),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: const Color(0xFFB87333),
-                    size: _getArrowIconSize(screenWidth),
-                  ),
-                ],
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'See more',
+                      style: TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: _getSeeMoreFontSize(screenWidth),
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFB87333),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth > 480 ? 8 : 4),
+                    Icon(
+                      Icons.arrow_forward,
+                      color: const Color(0xFFB87333),
+                      size: _getArrowIconSize(screenWidth),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -243,7 +264,7 @@ class _ProductPageState extends State<ProductPage> {
                 itemBuilder: (context, index) {
                   final product = products[index];
                   return _buildProductCard(
-                    index,
+                    product['id'] as String, // Using string ID
                     product['name'] as String,
                     product['subtitle'] as String,
                     product['weight'] as String,
@@ -505,7 +526,7 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _buildProductCard(
-    int productIndex,
+    String productId, // Changed to String
     String name,
     String subtitle,
     String weight,
@@ -513,7 +534,7 @@ class _ProductPageState extends State<ProductPage> {
     IconData fallbackIcon,
     double screenWidth,
   ) {
-    final quantity = cartManager.getQuantity(productIndex);
+    final quantity = cartManager.getQuantity(productId);
     final isInCart = quantity > 0;
     final isMobile = screenWidth <= 480;
 
@@ -627,7 +648,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
 
-          // Add Button / Quantity Controls (unchanged logic)
+          // Add Button / Quantity Controls
           Container(
             width: double.infinity,
             height: _getButtonHeight(screenWidth),
@@ -654,11 +675,11 @@ class _ProductPageState extends State<ProductPage> {
                           onTap: () {
                             if (quantity > 1) {
                               cartManager.updateQuantity(
-                                productIndex,
+                                productId,
                                 quantity - 1,
                               );
                             } else {
-                              cartManager.removeItem(productIndex);
+                              cartManager.removeItem(productId);
                             }
                           },
                           child: Container(
@@ -689,10 +710,7 @@ class _ProductPageState extends State<ProductPage> {
                         // Increase button
                         GestureDetector(
                           onTap: () {
-                            cartManager.updateQuantity(
-                              productIndex,
-                              quantity + 1,
-                            );
+                            cartManager.updateQuantity(productId, quantity + 1);
                           },
                           child: Container(
                             width: _getQuantityButtonSize(screenWidth),
@@ -715,11 +733,11 @@ class _ProductPageState extends State<ProductPage> {
                 : ElevatedButton(
                     onPressed: () {
                       cartManager.addItem(
-                        id: productIndex,
+                        id: productId, // Using string ID
                         name: name,
                         subtitle: subtitle,
                         weight: weight,
-                        price: 0.0, // Price removed, set to 0
+                        price: 0.0, // Price set to 0 for contact pricing
                         image: imagePath,
                         icon: fallbackIcon,
                       );

@@ -1,4 +1,3 @@
-// updated_cart_button.dart
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
@@ -23,8 +22,6 @@ class CartButton extends StatelessWidget {
     this.iconColor = Colors.white,
     this.badgeColor = const Color(0xFFFFC107),
     this.badgeTextColor = const Color(0xFF2D5A4A),
-    required int itemCount,
-    VoidCallback? onPressed,
   });
 
   @override

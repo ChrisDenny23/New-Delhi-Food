@@ -1,7 +1,9 @@
-// cart_page.dart
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dio/dio.dart';
+import 'package:newdelhifoods/config.dart';
 import 'cart_manager.dart';
 
 class CartPage extends StatefulWidget {
@@ -13,6 +15,15 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final CartManager cartManager = CartManager();
+  final _storage = const FlutterSecureStorage();
+  final Dio _dio = Dio();
+  bool _isPlacingOrder = false;
+
+  @override
+  void initState() {
+    super.initState();
+    cartManager.initialize(); // Initialize cart manager
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +33,7 @@ class _CartPageState extends State<CartPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF043C3E), // Match header color
+        backgroundColor: const Color(0xFF043C3E),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -310,19 +321,33 @@ class _CartPageState extends State<CartPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                  item.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Icon(
-                        item.icon,
-                        size: _getCartFallbackIconSize(screenWidth),
-                        color: const Color(0xFF043C3E),
+                child: item.image.startsWith('http')
+                    ? Image.network(
+                        item.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Icon(
+                              item.icon,
+                              size: _getCartFallbackIconSize(screenWidth),
+                              color: const Color(0xFF043C3E),
+                            ),
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        item.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Icon(
+                              item.icon,
+                              size: _getCartFallbackIconSize(screenWidth),
+                              color: const Color(0xFF043C3E),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ),
 
@@ -359,24 +384,46 @@ class _CartPageState extends State<CartPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Text(
-                        '₹${item.price.toStringAsFixed(0)}',
-                        style: TextStyle(
-                          fontFamily: 'Josefin Sans',
-                          fontSize: _getCartPriceSize(screenWidth),
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF043C3E),
-                        ),
-                      ),
-                      if (item.quantity > 1) ...[
-                        const SizedBox(width: 8),
+                      if (item.price > 0) ...[
                         Text(
-                          'x${item.quantity}',
+                          '₹${item.price.toStringAsFixed(0)}',
                           style: TextStyle(
                             fontFamily: 'Josefin Sans',
-                            fontSize: _getCartSubtitleSize(screenWidth),
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF666666),
+                            fontSize: _getCartPriceSize(screenWidth),
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF043C3E),
+                          ),
+                        ),
+                        if (item.quantity > 1) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            'x${item.quantity}',
+                            style: TextStyle(
+                              fontFamily: 'Josefin Sans',
+                              fontSize: _getCartSubtitleSize(screenWidth),
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF666666),
+                            ),
+                          ),
+                        ],
+                      ] else ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFB87333).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Contact for price',
+                            style: TextStyle(
+                              fontFamily: 'Josefin Sans',
+                              fontSize: _getCartSubtitleSize(screenWidth),
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFB87333),
+                            ),
                           ),
                         ),
                       ],
@@ -505,7 +552,7 @@ class _CartPageState extends State<CartPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Order Summary - Compact Version
+          // Order Summary
           Container(
             padding: EdgeInsets.all(isMobile ? 12 : 16),
             decoration: BoxDecoration(
@@ -531,7 +578,9 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Text(
-                      '₹${cartManager.totalAmount.toStringAsFixed(0)}',
+                      cartManager.totalAmount > 0
+                          ? '₹${cartManager.totalAmount.toStringAsFixed(0)}'
+                          : 'Contact for price',
                       style: TextStyle(
                         fontFamily: 'Josefin Sans',
                         fontSize: _getCompactSummaryTextSize(screenWidth),
@@ -612,7 +661,9 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Text(
-                      '₹${cartManager.totalAmount.toStringAsFixed(0)}',
+                      cartManager.totalAmount > 0
+                          ? '₹${cartManager.totalAmount.toStringAsFixed(0)}'
+                          : 'Contact for price',
                       style: TextStyle(
                         fontFamily: 'Josefin Sans',
                         fontSize: _getCompactTotalTextSize(screenWidth),
@@ -627,7 +678,7 @@ class _CartPageState extends State<CartPage> {
           ),
           SizedBox(height: isMobile ? 12 : 16),
 
-          // Checkout Button - Compact
+          // Checkout Button
           Container(
             width: double.infinity,
             height: _getCompactCheckoutButtonHeight(screenWidth),
@@ -647,9 +698,7 @@ class _CartPageState extends State<CartPage> {
               ],
             ),
             child: ElevatedButton(
-              onPressed: () {
-                _showCheckoutDialog();
-              },
+              onPressed: _isPlacingOrder ? null : _placeOrder,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
@@ -657,26 +706,35 @@ class _CartPageState extends State<CartPage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Proceed to Checkout',
-                    style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: _getCompactButtonTextSize(screenWidth),
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+              child: _isPlacingOrder
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.shopping_bag_outlined,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Place Order',
+                          style: TextStyle(
+                            fontFamily: 'Josefin Sans',
+                            fontSize: _getCompactButtonTextSize(screenWidth),
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
@@ -684,9 +742,64 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void _showCheckoutDialog() {
+  Future<void> _placeOrder() async {
+    setState(() {
+      _isPlacingOrder = true;
+    });
+
+    try {
+      // Get access token from storage
+      final accessToken = await _storage.read(key: 'access_token');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        _showErrorMessage('Please login to place an order');
+        return;
+      }
+
+      // Make API call to place order with authentication header
+      final response = await _dio.post(
+        '$apiBaseUrl/orders/add-order',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        _showOrderSuccessDialog(
+          response.data['orderId'],
+          response.data['totalAmount'],
+        );
+      } else {
+        _showErrorMessage(response.data['error'] ?? 'Failed to place order');
+      }
+    } on DioException catch (e) {
+      String errorMessage = 'Network error. Please try again.';
+
+      if (e.response?.data != null && e.response?.data['error'] != null) {
+        errorMessage = e.response?.data['error'];
+      } else if (e.response?.statusCode == 401) {
+        errorMessage = 'Please login to continue';
+      }
+
+      _showErrorMessage(errorMessage);
+    } catch (e) {
+      _showErrorMessage('An unexpected error occurred');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPlacingOrder = false;
+        });
+      }
+    }
+  }
+
+  void _showOrderSuccessDialog(String orderId, double totalAmount) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -697,12 +810,12 @@ class _CartPageState extends State<CartPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF043C3E).withOpacity(0.1),
+                  color: const Color(0xFF7CB342).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.check_circle,
-                  color: Color(0xFF043C3E),
+                  color: Color(0xFF7CB342),
                   size: 24,
                 ),
               ),
@@ -717,13 +830,60 @@ class _CartPageState extends State<CartPage> {
               ),
             ],
           ),
-          content: const Text(
-            'Your order has been successfully placed. Thank you for shopping with New Delhi Foods!\n\nYou will receive your items within 15 minutes.',
-            style: TextStyle(
-              fontFamily: 'Josefin Sans',
-              color: Color(0xFF666666),
-              height: 1.5,
-            ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Your order has been successfully placed!',
+                style: TextStyle(
+                  fontFamily: 'Josefin Sans',
+                  color: Color(0xFF666666),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F9FA),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order ID: ${orderId.substring(0, 8)}...',
+                      style: const TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Color(0xFF043C3E),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Total: ₹${totalAmount.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Color(0xFF2D1B16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'You will receive your items within 15 minutes. Thank you for shopping with New Delhi Foods!',
+                style: TextStyle(
+                  fontFamily: 'Josefin Sans',
+                  color: Color(0xFF666666),
+                  height: 1.5,
+                ),
+              ),
+            ],
           ),
           actions: [
             Container(
@@ -738,9 +898,9 @@ class _CartPageState extends State<CartPage> {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  cartManager.clearCart();
-                  Navigator.pop(context);
+                  Navigator.pop(context); // Close dialog
+                  cartManager.clearCart(); // Clear cart
+                  Navigator.pop(context); // Go back to previous page
                 },
                 child: const Text(
                   'Continue Shopping',
@@ -755,6 +915,18 @@ class _CartPageState extends State<CartPage> {
           ],
         );
       },
+    );
+  }
+
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade400,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 3),
+      ),
     );
   }
 
@@ -844,7 +1016,6 @@ class _CartPageState extends State<CartPage> {
     return 15;
   }
 
-  // Compact sizing methods for bottom section
   double _getCompactSummaryTextSize(double screenWidth) {
     if (screenWidth > 768) return 14;
     if (screenWidth > 480) return 13;

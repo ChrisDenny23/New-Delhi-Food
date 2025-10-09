@@ -278,10 +278,7 @@ class _HeaderSectionState extends State<HeaderSection> {
                 ],
 
                 // Cart Button
-                CartButton(
-                  itemCount: widget.cartItemCount,
-                  onPressed: widget.onCartPressed,
-                ),
+                CartButton(),
 
                 const SizedBox(width: 16),
 
